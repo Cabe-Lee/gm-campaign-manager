@@ -13,6 +13,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@supabase/server": "^1.9.2",
     "@tailwindcss/vite": "^4.3.3",
     "express": "^5.2.1",
     "nodemon": "^3.1.14",
