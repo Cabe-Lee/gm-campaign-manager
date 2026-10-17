@@ -1,0 +1,14 @@
+# dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# secrets: never commit these
+.env
+.env*.local
+
+# misc
+.vercel
+*.log
