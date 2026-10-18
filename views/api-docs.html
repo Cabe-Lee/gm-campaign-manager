@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Docs — GM Campaign Manager</title>
+    <link rel="stylesheet" href="styles/index.css">
+    <script src="js/partials.js"></script>
+    <script src="js/db.js"></script>
+</head>
+<body>
+    <gm-header></gm-header>
+
+    <main class="docs">
+        <h1>API Docs</h1>
+        <p>Test the database endpoints below. Results appear as JSON.</p>
+
+        <section class="endpoint">
+            <h3><span class="method get">GET</span> /api/db</h3>
+            <p>Verify the database connection is live.</p>
+            <button class="secondary" onclick="testDb()">Test connection</button>
+            <pre id="res-db"></pre>
+        </section>
+
+        <section class="endpoint">
+            <h3><span class="method get">GET</span> /api/campaigns</h3>
+            <p>List campaigns (last 50).</p>
+            <button class="secondary" onclick="listCampaigns()">List campaigns</button>
+            <pre id="res-campaigns"></pre>
+        </section>
+
+        <section class="endpoint">
+            <h3><span class="method post">POST</span> /api/campaigns</h3>
+            <p>Create a new campaign.</p>
+            <div class="form-row">
+                <input type="text" id="c-name" placeholder="Name">
+                <input type="text" id="c-desc" placeholder="Description">
+                <button onclick="createCampaign()">Create</button>
+            </div>
+            <pre id="res-create"></pre>
+        </section>
+
+        <section class="endpoint">
+            <h3><span class="method get">GET</span> /api/pcs</h3>
+            <p>List player characters (last 50).</p>
+            <button class="secondary" onclick="listPCs()">List PCs</button>
+            <pre id="res-pcs"></pre>
+        </section>
+    </main>
+
+    <gm-footer></gm-footer>
+
+    <script>
+        async function show(id, fn) {
+            const out = document.getElementById(id);
+            out.textContent = 'Loading…';
+            try {
+                const data = await fn();
+                out.textContent = JSON.stringify(data, null, 2);
+                out.className = data.ok ? 'ok' : 'err';
+            } catch (err) {
+                out.textContent = err.message;
+                out.className = 'err';
+            }
+        }
+        function testDb() { return show('res-db', () => gmDB.test()); }
+        function listCampaigns() { return show('res-campaigns', () => gmDB.campaigns()); }
+        function createCampaign() {
+            const name = document.getElementById('c-name').value;
+            const desc = document.getElementById('c-desc').value;
+            return show('res-create', () => gmDB.createCampaign({ name, description: desc }));
+        }
+        function listPCs() { return show('res-pcs', () => gmDB.pcs()); }
+    </script>
+</body>
+</html>
