@@ -8,7 +8,6 @@ const port = process.env.PORT || 3000;
 let db = null;
 let dbKind = 'memory';
 
-// ---- In-memory fallback store (used when PostgreSQL is unreachable) ----
 const memory = {
   campaigns: [
     { id: 1, name: 'Curse of Strahd', description: 'Barovia adventure', created_at: new Date().toISOString() },
@@ -22,7 +21,6 @@ const memory = {
   nextPCId: 3,
 };
 
-// ---- Try real PostgreSQL ----
 if (process.env.DATABASE_URL) {
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -40,7 +38,6 @@ if (process.env.DATABASE_URL) {
     console.log('[db] falling back to in-memory store');
   });
 
-  // Attempt a quick probe so dbKind reflects reality shortly after start
   pool.query('SELECT 1').then(
     () => { db = pool; dbKind = 'postgres'; console.log('[db] PostgreSQL probe ok'); },
     () => { console.log('[db] PostgreSQL probe failed; using in-memory store'); }
@@ -49,16 +46,14 @@ if (process.env.DATABASE_URL) {
   console.log('[db] no DATABASE_URL; using in-memory store');
 }
 
-// ---- Helpers ----
 async function query(sql, params = []) {
   if (dbKind === 'postgres') {
     const { rows } = await db.query(sql, params);
     return rows;
   }
-  return null; // signals caller to use memory
+  return null; 
 }
 
-// ---- API routes ----
 app.get('/api/db', async (_req, res) => {
   try {
     if (dbKind === 'postgres') {
@@ -117,7 +112,6 @@ app.get('/api/pcs', async (_req, res) => {
   }
 });
 
-// ---- static files ----
 app.use(express.static('views'));
 app.use('/styles', express.static('styles'));
 app.use('/js', express.static('js'));
